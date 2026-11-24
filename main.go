@@ -12,7 +12,7 @@ type server struct {
 	addr string
 }
 
-func getUsersListHandler(w http.ResponseWriter, r *http.Request) {
+func (s *server) getUsersListHandler(w http.ResponseWriter, r *http.Request) {
 	usersList := []User{}
 
 	for _, user := range users {
@@ -21,7 +21,7 @@ func getUsersListHandler(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, usersList)
 }
 
-func createUserHandler(w http.ResponseWriter, r *http.Request) {
+func (s *server) createUserHandler(w http.ResponseWriter, r *http.Request) {
 	var req CreateUserRequest
 	decodeError := json.NewDecoder(r.Body).Decode(&req) // JSON -> Go (Decode)
 	if decodeError != nil {
@@ -44,7 +44,7 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusCreated, newUser)
 }
 
-func getUserHandler(w http.ResponseWriter, r *http.Request) {
+func (s *server) getUserHandler(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 
 	// validation
@@ -62,9 +62,9 @@ func main() {
 	srv := &server{addr: ":8080"}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /users", getUsersListHandler)
-	mux.HandleFunc("POST /users", createUserHandler)
-	mux.HandleFunc("GET /users/{id}", getUserHandler)
+	mux.HandleFunc("GET /users", srv.getUsersListHandler)
+	mux.HandleFunc("POST /users", srv.createUserHandler)
+	mux.HandleFunc("GET /users/{id}", srv.getUserHandler)
 
 	log.Println("Server is running...")
 
