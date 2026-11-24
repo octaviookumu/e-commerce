@@ -19,15 +19,12 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// GET
 	if r.Method == "GET" && r.URL.Path == "/users" {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
 		usersList := []User{}
 
 		for _, user := range users {
 			usersList = append(usersList, user)
 		}
-		json.NewEncoder(w).Encode(usersList) // Go -> JSON (Encode)
+		writeJSON(w, http.StatusOK, usersList)
 		return
 	}
 
@@ -37,12 +34,12 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		var req CreateUserRequest
 		decodeError := json.NewDecoder(r.Body).Decode(&req) // JSON -> Go (Decode)
 		if decodeError != nil {
-			http.Error(w, "invalid JSON", http.StatusBadRequest)
+			handleError(w, "invalid JSON", http.StatusBadRequest)
 			return
 		}
 
 		if req.Name == "" {
-			http.Error(w, "name is required", http.StatusBadRequest)
+			handleError(w, "name is required", http.StatusBadRequest)
 			return
 		}
 
@@ -53,9 +50,7 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		users[newID] = newUser
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(newUser)
+		writeJSON(w, http.StatusCreated, newUser)
 		return
 	}
 
@@ -67,16 +62,15 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 			user, exists := users[id]
 			if !exists {
-				http.Error(w, "user not found", http.StatusNotFound)
+				handleError(w, "user not found", http.StatusNotFound)
 			}
 
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(user)
+			writeJSON(w, http.StatusOK, user)
 		}
 		return
 	}
 
-	http.Error(w, "not found", http.StatusNotFound)
+	handleError(w, "not found", http.StatusNotFound)
 
 }
 
