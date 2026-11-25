@@ -9,6 +9,8 @@ import (
 )
 
 // MemoryRepository: one implementation
+// Mu - mutual exclusion - excludes every goroutine apart from the one that holds the lock
+// allows a single goroutine to work on that resource at a time
 type MemoryRepository struct {
 	mu    sync.RWMutex // to add concurrency because maps in go are not concurrent-safe
 	users map[string]User
