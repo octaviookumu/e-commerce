@@ -1,6 +1,7 @@
 package user
 
 // business logic. storage functions
+// service calls the repository
 
 import (
 	"context" // will help with cancelling requests, adding timeouts
@@ -27,9 +28,7 @@ type Service struct {
 // repo := user.NewMemoryRepository()
 // service := user.NewService(repo)
 func NewService(repo Repository) *Service {
-	return &Service{
-		repo: repo,
-	}
+	return &Service{repo: repo}
 }
 
 // methods for the service
