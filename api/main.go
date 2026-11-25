@@ -6,10 +6,18 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/octaviookumu/myproject/internal/user"
 )
 
 func main() {
+	// set up layers: STORAGE -> SERVICE -> TRANSPORT
+	userRepo := user.NewMemoryRepository()
+	userService := user.NewService(userRepo)
+	userHandler := user.NewHandler(userService)
+
 	mux := http.NewServeMux()
+	userHandler.Register(mux) // register our handlers into global mux
 
 	srv := &http.Server{
 		Addr:        ":8080",

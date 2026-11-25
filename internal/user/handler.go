@@ -18,6 +18,13 @@ func NewHandler(svc *Service) *Handler {
 	return &Handler{svc: svc}
 }
 
+// For handlers and services, pointer receivers are a common choice: they avoid copying the struct and let methods share or update the same instance. You don’t need to use pointers everywhere; use them when you want that shared-instance behavior or need to modify the original value.
+func (h *Handler) Register(mux *http.ServeMux) {
+	mux.HandleFunc("GET /users", h.list)
+	mux.HandleFunc("POST /users/", h.create)
+	mux.HandleFunc("GET /users/{id}", h.get)
+}
+
 // methods
 func (h *Handler) list(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
