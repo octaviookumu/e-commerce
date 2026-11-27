@@ -1,6 +1,9 @@
 package product
 
-import "time"
+import (
+	"errors"
+	"time"
+)
 
 // entity
 type Product struct {
@@ -10,3 +13,7 @@ type Product struct {
 	Stock     int       `json:"stock"`
 	CreatedAt time.Time `json:"created_at"`
 }
+
+var (
+	ErrNotFound = errors.New("product not found")
+)
