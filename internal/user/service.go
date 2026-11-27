@@ -57,5 +57,4 @@ func (s *Service) Create(ctx context.Context, payload CreateUserRequest) (User, 
 	}
 
 	return newUser, nil
-
 }
